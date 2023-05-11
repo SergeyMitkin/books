@@ -1,0 +1,43 @@
+version: '3'
+
+networks:
+  default:
+    driver: bridge
+
+services:
+  php:
+    image: yiisoftware/yii2-php:7.4-apache
+    volumes:
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      - ./:/app:delegated
+    ports:
+      - '80:80'
+    networks:
+      - default
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      - MYSQL_DATABASE=books_db
+      - MYSQL_USER=books_user
+      - MYSQL_PASSWORD=books_password
+      - MYSQL_ROOT_PASSWORD=books_root_password
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - "./docker/mysql:/var/lib/mysql"
+    networks:
+      - default
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - '8888:80'
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db
+    depends_on:
+      - db
