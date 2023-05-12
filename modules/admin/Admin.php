@@ -2,7 +2,7 @@
 
 namespace app\modules\admin;
 
-//use app\modules\admin\components\AdminAccessControl;
+use app\models\tables\Users;
 use yii\filters\AccessControl;
 
 /**
@@ -25,16 +25,18 @@ class Admin extends \yii\base\Module
                     [
                         'allow' => true,
                         'matchCallback' => function ($rule, $action) {
-                            return \Yii::$app->user->getId() == 100;
+                            $users_model = new Users();
+                            return \Yii::$app->user->getId() == $users_model->admin_id;
                         },
                     ],
                     [
                         'allow' => true,
                         'controllers' => ['admin/site'],
+                        'actions' => ['login']
                     ],
                 ],
                 'denyCallback' => function($rule, $action) {
-                    \Yii::$app->response->redirect(['admin']);
+                    \Yii::$app->response->redirect(['admin/site/login']);
                 },
             ],
         ];

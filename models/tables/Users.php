@@ -15,6 +15,9 @@ use Yii;
  */
 class Users extends \yii\db\ActiveRecord
 {
+    public $admin_id = 100;
+    public $admin_name = 'admin';
+
     /**
      * {@inheritdoc}
      */
@@ -30,6 +33,7 @@ class Users extends \yii\db\ActiveRecord
     {
         return [
             [['username'], 'required'],
+            [['username'], 'unique'],
             [['username'], 'string', 'max' => 20],
             [['password', 'accessToken'], 'string', 'max' => 255],
             [['authKey'], 'string', 'max' => 32],
@@ -48,5 +52,14 @@ class Users extends \yii\db\ActiveRecord
             'authKey' => 'Auth Key',
             'accessToken' => 'Access Token',
         ];
+    }
+
+    public function isAdmin()
+    {
+        if (Yii::$app->user->identity->getId() === $this->admin_id){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

@@ -2,7 +2,8 @@
 
 namespace app\modules\admin\controllers;
 
-use app\models\LoginForm;
+use app\models\AdminLoginForm;
+use app\models\tables\Users;
 use yii\web\Controller;
 
 class SiteController extends Controller
@@ -13,7 +14,26 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $model = new LoginForm();
+        return $this->render('index');
+    }
+
+    public function actionLogin()
+    {
+        $this->layout = 'main-login';
+
+        if(!\Yii::$app->user->isGuest){
+            $user = new Users();
+            if ($user->isAdmin()){
+                $this->redirect(['index']);
+            }
+        }
+
+        $model = new AdminLoginForm();
+
+        if ($model->load(\Yii::$app->request->post()) && $model->login()) {
+            $this->redirect(['index']);
+        }
+
         return $this->render('login', [
             'model' => $model
         ]);
