@@ -3,6 +3,7 @@
 namespace app\modules\admin\controllers;
 
 use app\models\AdminLoginForm;
+use app\models\tables\Books;
 use app\models\tables\Users;
 use yii\web\Controller;
 
@@ -14,6 +15,12 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        // --- ОТЛАДКА НАЧАЛО
+        echo '<pre>';
+        var_dump(Books::getData());
+        echo'</pre>';
+        die;
+        // --- Отладка конец
         return $this->render('index');
     }
 

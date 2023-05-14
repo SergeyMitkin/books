@@ -11,10 +11,7 @@ class BooksParserController extends Controller
      * books parser
      */
     public function actionIndex() {
-        $file = \Yii::getAlias('@app/data/books.json');
-
-        $json = file_get_contents($file);
-        $data = Json::decode($json, true);
-        print_r($data);
+        $data = file_get_contents(\Yii::getAlias('@app/data/books.json'));
+        print_r(Json::decode($data, true));
     }
 }
