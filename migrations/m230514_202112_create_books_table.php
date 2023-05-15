@@ -20,6 +20,8 @@ class m230514_202112_create_books_table extends Migration
             'pageCount' => $this->integer(),
             'publishedDate' => $this->string(),
             'thumbnailUrl' => $this->string(),
+            'shortDescription' => $this->text(),
+            'longDescription' => $this->text(),
             'status' => $this->string(),
         ]);
 
@@ -33,6 +35,8 @@ class m230514_202112_create_books_table extends Migration
                 'pageCount' => (isset($books_arr[$i]['pageCount'])) ? $books_arr[$i]['pageCount'] : null,
                 'publishedDate' => (isset($books_arr[$i]['publishedDate']['$date'])) ? $books_arr[$i]['publishedDate']['$date'] : null,
                 'thumbnailUrl' => (isset($books_arr[$i]['thumbnailUrl'])) ? $books_arr[$i]['thumbnailUrl'] : null,
+                'shortDescription' => (isset($books_arr[$i]['shortDescription'])) ? $books_arr[$i]['shortDescription'] : null,
+                'longDescription' => (isset($books_arr[$i]['longDescription'])) ? $books_arr[$i]['longDescription'] : null,
                 'status' => (isset($books_arr[$i]['status'])) ? $books_arr[$i]['status'] : null,
             ]);
         }
