@@ -3,6 +3,7 @@
 namespace app\models\tables;
 
 use Yii;
+use yii\helpers\Json;
 
 /**
  * This is the model class for table "books".
@@ -50,5 +51,10 @@ class Books extends \yii\db\ActiveRecord
             'thumbnailUrl' => 'Thumbnail Url',
             'status' => 'Status',
         ];
+    }
+
+    public static function getJsonData() {
+        $data = file_get_contents(\Yii::getAlias('@app/data/books.json'));
+        return Json::decode($data, true);
     }
 }

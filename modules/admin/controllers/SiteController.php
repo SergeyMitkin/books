@@ -16,23 +16,12 @@ class SiteController extends Controller
     public function actionIndex()
     {
         // --- ОТЛАДКА НАЧАЛО
-//        echo '<pre>';
-//        var_dump(Books::getData());
-//        echo'</pre>';
-//        die;
-        // --- Отладка конец
-
-        $author_id = \app\models\tables\Authors::find()
-            ->select('id')
-            ->where(['name' => 'Robi Sen'])
-            ->one();
-
-        // --- ОТЛАДКА НАЧАЛО
         echo '<pre>';
-        var_dump($author_id->id);
+        var_dump(Books::getJsonData());
         echo'</pre>';
         die;
         // --- Отладка конец
+
 
         return $this->render('index');
     }
