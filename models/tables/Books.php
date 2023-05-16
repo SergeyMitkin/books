@@ -59,6 +59,7 @@ class Books extends \yii\db\ActiveRecord
             'shortDescription' => 'Short Description',
             'longDescription' => 'Long Description',
             'status' => 'Status',
+            'authors' => 'Authors'
         ];
     }
 

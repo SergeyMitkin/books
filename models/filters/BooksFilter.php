@@ -2,6 +2,7 @@
 
 namespace app\models\filters;
 
+use app\models\tables\Authors;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\tables\Books;
@@ -11,6 +12,8 @@ use app\models\tables\Books;
  */
 class BooksFilter extends Books
 {
+    public $authors;
+
     /**
      * {@inheritdoc}
      */
@@ -18,7 +21,7 @@ class BooksFilter extends Books
     {
         return [
             [['id', 'pageCount'], 'integer'],
-            [['title', 'isbn', 'publishedDate', 'thumbnailUrl', 'shortDescription', 'longDescription', 'status'], 'safe'],
+            [['title', 'isbn', 'publishedDate', 'thumbnailUrl', 'shortDescription', 'longDescription', 'status', 'authors'], 'safe'],
         ];
     }
 
@@ -41,12 +44,19 @@ class BooksFilter extends Books
     public function search($params)
     {
         $query = Books::find();
+        $query->joinWith(['authors']);
+        $query->distinct();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+
+        $dataProvider->sort->attributes['authors'] = [
+            'asc' => [Authors::tableName().'.name' => SORT_ASC],
+            'desc' => [Authors::tableName().'.name' => SORT_DESC],
+        ];
 
         $this->load($params);
 
@@ -57,18 +67,20 @@ class BooksFilter extends Books
         }
 
         // grid filtering conditions
-        $query->andFilterWhere([
-            'id' => $this->id,
-            'pageCount' => $this->pageCount,
-        ]);
+//        $query->andFilterWhere([
+//            'id' => $this->id,
+//            'pageCount' => $this->pageCount,
+//        ]);
 
         $query->andFilterWhere(['like', 'title', $this->title])
-            ->andFilterWhere(['like', 'isbn', $this->isbn])
-            ->andFilterWhere(['like', 'publishedDate', $this->publishedDate])
-            ->andFilterWhere(['like', 'thumbnailUrl', $this->thumbnailUrl])
-            ->andFilterWhere(['like', 'shortDescription', $this->shortDescription])
-            ->andFilterWhere(['like', 'longDescription', $this->longDescription])
-            ->andFilterWhere(['like', 'status', $this->status]);
+//            ->andFilterWhere(['like', 'isbn', $this->isbn])
+//            ->andFilterWhere(['like', 'publishedDate', $this->publishedDate])
+//            ->andFilterWhere(['like', 'thumbnailUrl', $this->thumbnailUrl])
+//            ->andFilterWhere(['like', 'shortDescription', $this->shortDescription])
+//            ->andFilterWhere(['like', 'longDescription', $this->longDescription])
+            ->andFilterWhere(['=', 'status', $this->status])
+            ->andFilterWhere(['like', 'authors.name', $this->authors])
+        ;
 
         return $dataProvider;
     }

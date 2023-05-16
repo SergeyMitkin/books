@@ -10,6 +10,16 @@ use yii\grid\GridView;
 /** @var app\models\filters\BooksFilter $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
+$this->registerCss(
+    '
+        .status-filter {
+            width: unset;
+        }
+        ul.pagination li:not(.prev, .next) {
+        margin: 0 5px;
+    }'
+);
+
 $this->title = 'Books';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -29,21 +39,40 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
+//            'id',
             'title',
-            'isbn',
+//            'isbn',
 //            'pageCount',
-            [
-                'attribute' => 'publishedDate',
-                'value' => function($model){
-                    $date = new DateTime($model->publishedDate);
-                    return date_format($date, "Y-m-d");
-                },
-            ],
+//            [
+//                'attribute' => 'publishedDate',
+//                'value' => function($model){
+//                    $date = new DateTime($model->publishedDate);
+//                    return date_format($date, "Y-m-d");
+//                },
+//            ],
             //'thumbnailUrl',
             //'shortDescription:ntext',
             //'longDescription:ntext',
-            //'status',
+            [
+                'attribute' => 'status',
+                'filter' => \yii\helpers\ArrayHelper::map(\app\models\tables\Books::find()->select('status')->all(), 'status', 'status'),
+                'filterInputOptions' => ['class' => 'form-control status-filter'],
+            ],
+            [
+                'attribute' => 'authors',
+                'label' => 'Authors',
+                'value' => function($model){
+                    $authors = '';
+                    for ($i=0; $i<count($model->authors); $i++) {
+                        if ($i !== count($model->authors)-1) {
+                            $authors .= $model->authors[$i]->name . ', ';
+                        } else {
+                            $authors .= $model->authors[$i]->name;
+                        }
+                    }
+                    return $authors;
+                }
+            ],
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, Books $model, $key, $index, $column) {
