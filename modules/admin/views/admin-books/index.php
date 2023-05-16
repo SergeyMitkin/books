@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Books', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Book', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -32,8 +32,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'title',
             'isbn',
-            'pageCount',
-            'publishedDate',
+//            'pageCount',
+            [
+                'attribute' => 'publishedDate',
+                'value' => function($model){
+                    $date = new DateTime($model->publishedDate);
+                    return date_format($date, "Y-m-d");
+                },
+            ],
             //'thumbnailUrl',
             //'shortDescription:ntext',
             //'longDescription:ntext',
