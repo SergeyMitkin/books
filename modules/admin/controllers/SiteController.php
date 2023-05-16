@@ -15,14 +15,6 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        // --- ОТЛАДКА НАЧАЛО
-        echo '<pre>';
-        var_dump(Books::getJsonData());
-        echo'</pre>';
-        die;
-        // --- Отладка конец
-
-
         return $this->render('index');
     }
 
