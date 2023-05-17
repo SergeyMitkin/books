@@ -24,6 +24,8 @@ use Yii;
  */
 class Books extends \yii\db\ActiveRecord
 {
+    public $croppedDescription;
+
     /**
      * {@inheritdoc}
      */
@@ -101,5 +103,34 @@ class Books extends \yii\db\ActiveRecord
     public function getCategories()
     {
         return $this->hasMany(Categories::class, ['id' => 'category_id'])->viaTable('books_categories', ['book_id' => 'id']);
+    }
+
+    /**
+     * Сокращённый вариант описания книги для вывода в превью
+     */
+    function getCroppedDescription()
+    {
+        $crop_length = 240;
+
+        if (strlen($this->shortDescription) <= $crop_length) {
+            return $this->shortDescription;
+        }
+
+        $cropped_desc = rtrim(mb_substr($this->shortDescription, 0, $crop_length), " \t.");
+
+        // Чтобы текст не обрезался посередине слова, последнее слово удаляется
+        $cropped_desc = preg_replace('/\s\w*$/', '', $cropped_desc);
+
+        if ($cropped_desc === '') {
+            return '';
+        }
+
+        if (mb_substr($cropped_desc, -1) === '?' || mb_substr($cropped_desc, -1) === '!'){
+            $cropped_desc.= '..';
+        } else {
+            $cropped_desc.= '...';
+        }
+
+        return $cropped_desc;
     }
 }

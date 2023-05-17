@@ -1,7 +1,7 @@
 <?php
 
 /** @var yii\web\View $this */
-
+$this->registerCssFile('/css/main-page.css');
 $this->title = 'Books';
 ?>
 <div class="site-index">
@@ -17,6 +17,21 @@ $this->title = 'Books';
                 <li><a class="dropdown-item" href="#">Something else here</a></li>
             </ul>
         </div>
+
+        <?= \yii\widgets\ListView::widget([
+            'dataProvider' => $dataProvider,
+            'layout' => '<div class="list-items">{items}</div><div class="pager">{pager}</div>',
+            'itemView' => function($model) {
+                return $this->render('book-preview', [
+                        'model' => $model
+                ]);
+            },
+            'summary' => false,
+            'options' => [
+                'tag' => 'div',
+                'class' => 'preview-container'
+            ]
+        ])?>
 
     </div>
 </div>

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\filters\BooksFilter;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -61,7 +62,13 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $searchModel = new BooksFilter();
+        $dataProvider = $searchModel->search($this->request->queryParams);
+
+        return $this->render('index', [
+//            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     /**

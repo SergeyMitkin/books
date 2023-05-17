@@ -1,0 +1,73 @@
+.list-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.book-preview {
+    width: 300px;
+    height: 240px;
+    border: 1px solid black;
+    padding: 10px;
+    margin: 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+}
+
+.book-title {
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+}
+
+.book-cover {
+    width: 50%;
+    height: 150px;
+    padding: 10px 10px;
+}
+
+.book-preview img {
+    max-width: 100px;
+    width: auto;
+}
+
+.book-info {
+    width: 50%;
+    height: 100%
+}
+
+.book-authors {
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.book-short-description {
+    font-size: 10px;
+    max-height: 180px;
+    overflow: hidden;
+}
+
+.pager {
+    display: block;
+}
+
+ul.pagination li:not(.prev, .next) {
+    margin: 0 5px;
+}
+
+@media (max-width: 350px) {
+    .book-preview {
+        width: 150px;
+        height: unset;
+    }
+    .book-cover {
+        width: 100%;
+        height: unset;
+        padding: 0 0 10px 0;
+        text-align: center;
+    }
+    .book-info {
+        width: 100%;
+    }
+}
