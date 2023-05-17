@@ -23,7 +23,19 @@ class SiteController extends Controller
             $file_base_name = $file_name_arr[0];
             $file_extension = $file_name_arr[1];
 
-            $local_file_path = \Yii::getAlias('@webroot/img') . $file_name;
+            $fi = 0;
+            while (file_exists(\Yii::getAlias('@webroot/img/') . $file_base_name . '.' . $file_extension)) {
+                $file_index_arr = explode('_', $file_base_name);
+
+                if (count($file_index_arr) > 1 && is_numeric(end($file_index_arr))) {
+                    $file_base_name = substr($file_base_name, 0, strrpos($file_base_name, '_'));
+                }
+                $file_base_name .= '_'. ($fi++);
+            }
+
+            $local_file_path = \Yii::getAlias('@webroot/img/') . $file_base_name . '.' . $file_extension;
+
+
             file_put_contents($local_file_path, file_get_contents($remote_file_url));
         }
 
