@@ -3,10 +3,7 @@
 namespace app\modules\admin\controllers;
 
 use app\models\AdminLoginForm;
-use app\models\tables\Books;
-use app\models\tables\BooksAuthors;
 use app\models\tables\Users;
-use yii\helpers\Json;
 use yii\web\Controller;
 
 class SiteController extends Controller
@@ -17,35 +14,18 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $data = file_get_contents(\Yii::getAlias('@app/data/books.json'));
-        // --- ОТЛАДКА НАЧАЛО
-//        echo '<pre>';
-//        var_dump(Json::decode($data, true));
-//        echo'</pre>';
-//        die;
-        // --- Отладка конец
+        $remote_file_url = 'https://s3.amazonaws.com/AKIAJC5RLADLUMVRPFDQ.book-thumb-images/hahn.jpg';
 
-//        $books = BooksAuthors::find()
-//            ->select(['*'])
-//            ->joinWith(['author'])
-//            ->andFilterWhere(['like', 'authors.name', 'W. Frank Ableson'])
-//            ->asArray()
-//            ->all();
+        if (getimagesize($remote_file_url) !== false) {
+            $file_name = substr(strrchr($remote_file_url, '/'), 1);
 
-        $books = Books::find()
+            $file_name_arr = explode('.', $file_name);
+            $file_base_name = $file_name_arr[0];
+            $file_extension = $file_name_arr[1];
 
-            ->joinWith(['authors'])
-            ->andFilterWhere(['like', 'authors.name', 'W. Frank Ableson'])
-            ->all()
-        ;
-
-        // --- ОТЛАДКА НАЧАЛО
-        echo '<pre>';
-//        var_dump($books->createCommand()->getRawSql());
-        var_dump($books);
-        echo'</pre>';
-        die;
-        // --- Отладка конец
+            $local_file_path = \Yii::getAlias('@webroot/img') . $file_name;
+            file_put_contents($local_file_path, file_get_contents($remote_file_url));
+        }
 
         return $this->render('index');
     }
