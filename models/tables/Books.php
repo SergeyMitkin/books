@@ -106,6 +106,37 @@ class Books extends \yii\db\ActiveRecord
     }
 
     /**
+     * Строка с иманами авторов
+     */
+    public function authorsToString($is_preview = true)
+    {
+        $authors_str = '';
+        if (!empty($this->authors)) {
+            // Выводятся только первые два автора, чтобы помещались в preview
+            if ($is_preview === true) {
+                for ($i=0; $i<count($this->authors) && $i<2; $i++) {
+                    if ($i !== count($this->authors)-1) {
+                        $authors_str .= '<span class="book-author">' . $this->authors[$i]->name . ',</span>';
+                    } else {
+                        $authors_str .= '<span class="book-author">' .$this->authors[$i]->name . '</span>';
+                    }
+                }
+            } else {
+                for ($i=0; $i<count($this->authors); $i++) {
+                    if ($i !== count($this->authors)-1) {
+                        $authors_str .= '<span class="book-author">' . $this->authors[$i]->name . ',</span>';
+                    } else {
+                        $authors_str .= '<span class="book-author">' .$this->authors[$i]->name . '</span>';
+                    }
+                }
+            }
+            return $authors_str;
+        } else {
+            return '';
+        }
+    }
+
+    /**
      * Сокращённый вариант описания книги для вывода в превью
      */
     function getCroppedDescription()

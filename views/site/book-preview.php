@@ -13,7 +13,7 @@ use yii\helpers\Html;
         <img src="<?=$model->thumbnailUrl?>" alt="cover">
     </div>
     <div class="book-info">
-        <p class="book-authors">Authors: <span>авторы</span></span></p>
+        <p class="book-authors"><?=$model->authorsToString()?></p>
         <p class="book-short-description"><?=$model->getCroppedDescription()?></p>
     </div>
 </div>

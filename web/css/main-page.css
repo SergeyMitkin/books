@@ -40,6 +40,11 @@
 .book-authors {
     font-size: 12px;
     margin-bottom: 5px;
+    line-height: normal;
+}
+
+.book-author {
+    display: block;
 }
 
 .book-short-description {

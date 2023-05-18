@@ -62,15 +62,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'authors',
                 'label' => 'Authors',
                 'value' => function($model){
-                    $authors = '';
-                    for ($i=0; $i<count($model->authors); $i++) {
-                        if ($i !== count($model->authors)-1) {
-                            $authors .= $model->authors[$i]->name . ', ';
-                        } else {
-                            $authors .= $model->authors[$i]->name;
+                    if(!empty($model->authors)) {
+                        $authors = '';
+                        for ($i=0; $i<count($model->authors); $i++) {
+                            if ($i !== count($model->authors)-1) {
+                                $authors .= $model->authors[$i]->name . ', ';
+                            } else {
+                                $authors .= $model->authors[$i]->name;
+                            }
                         }
+                        return $authors;
+                    } else {
+                        return '';
                     }
-                    return $authors;
                 }
             ],
             [
