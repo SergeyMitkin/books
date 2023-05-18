@@ -1,3 +1,8 @@
+.books-categories {
+    float: left;
+    margin-right: 30px;
+}
+
 .list-items {
     display: flex;
     flex-wrap: wrap;
