@@ -24,9 +24,6 @@ $this->title = 'Books';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="books-index">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <p>
         <?= Html::a('Create Book', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
@@ -43,13 +40,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'title',
 //            'isbn',
 //            'pageCount',
-//            [
-//                'attribute' => 'publishedDate',
-//                'value' => function($model){
-//                    $date = new DateTime($model->publishedDate);
-//                    return date_format($date, "Y-m-d");
-//                },
-//            ],
             //'thumbnailUrl',
             //'shortDescription:ntext',
             //'longDescription:ntext',
