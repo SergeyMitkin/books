@@ -3,6 +3,10 @@
     margin-right: 30px;
 }
 
+.books-categories li {
+    list-style-type: none;
+}
+
 .list-items {
     display: flex;
     flex-wrap: wrap;

@@ -13,6 +13,7 @@ use app\models\tables\Books;
 class BooksFilter extends Books
 {
     public $authors;
+    public $category_id;
 
     /**
      * {@inheritdoc}
@@ -21,7 +22,7 @@ class BooksFilter extends Books
     {
         return [
             [['id', 'pageCount'], 'integer'],
-            [['title', 'isbn', 'publishedDate', 'thumbnailUrl', 'shortDescription', 'longDescription', 'status', 'authors'], 'safe'],
+            [['title', 'isbn', 'publishedDate', 'thumbnailUrl', 'shortDescription', 'longDescription', 'status', 'authors', 'category_id'], 'safe'],
         ];
     }
 
@@ -45,10 +46,10 @@ class BooksFilter extends Books
     {
         $query = Books::find();
         $query->joinWith(['authors']);
+        $query->joinWith(['categories']);
         $query->distinct();
 
         // add conditions that should always apply here
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -80,6 +81,7 @@ class BooksFilter extends Books
 //            ->andFilterWhere(['like', 'longDescription', $this->longDescription])
             ->andFilterWhere(['=', 'status', $this->status])
             ->andFilterWhere(['like', 'authors.name', $this->authors])
+            ->andFilterWhere(['=', 'categories.id', $this->category_id])
         ;
 
         return $dataProvider;

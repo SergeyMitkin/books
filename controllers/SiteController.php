@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\filters\BooksFilter;
+use app\models\tables\Categories;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -62,11 +63,16 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        $categories = Categories::find()->all();
+
         $searchModel = new BooksFilter();
+        if (Yii::$app->request->get('category_id') !== NULL) {
+            $searchModel->category_id = Yii::$app->request->get('category_id');
+        }
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
-//            'searchModel' => $searchModel,
+            'categories' => $categories,
             'dataProvider' => $dataProvider,
         ]);
     }
