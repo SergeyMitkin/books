@@ -3,6 +3,7 @@
 namespace app\models\tables;
 
 use Yii;
+use yii\helpers\Console;
 
 /**
  * This is the model class for table "books".
@@ -129,7 +130,7 @@ class Books extends \yii\db\ActiveRecord
     /**
      * Сокращённый вариант описания книги для вывода в превью
      */
-    function getCroppedDescription()
+    public function getCroppedDescription()
     {
         $crop_length = 240;
 
@@ -153,5 +154,66 @@ class Books extends \yii\db\ActiveRecord
         }
 
         return $cropped_desc;
+    }
+
+    /**
+     * @return void
+     */
+    public function uploadImages($books_arr)
+    {
+        Console::startProgress(0, count($books_arr));
+        for ($i=0; $i<count($books_arr); $i++) {
+            $remote_file_url = (isset($books_arr[$i]['thumbnailUrl'])) ? $books_arr[$i]['thumbnailUrl'] : '';
+            $http_status = $this->getHttpStatus($remote_file_url);
+
+            if (
+                $remote_file_url !== ''
+                && $http_status == 200
+                && file_get_contents($remote_file_url) !== ''
+                && getimagesize($remote_file_url) !== false
+            ) {
+                $file_name = substr(strrchr($remote_file_url, '/'), 1);
+
+                // Проверка имени файла на уникальность
+                if (file_exists(\Yii::getAlias('@app/web/img/') . $file_name) === true) {
+                    $local_file_path = $this->getLocalFilePath($file_name);
+                } else {
+                    $local_file_path = \Yii::getAlias('@app/web/img/') . $file_name;
+                }
+
+                file_put_contents($local_file_path, file_get_contents($remote_file_url));
+            }
+            Console::updateProgress($i, count($books_arr));
+        }
+        Console::endProgress();
+    }
+
+    public function getLocalFilePath($file_name) {
+        $file_name_arr = explode('.', $file_name);
+        $file_base_name = $file_name_arr[0];
+        $file_extension = $file_name_arr[1];
+
+        $fi = 0;
+        while (file_exists(\Yii::getAlias('@app/web/img/') . $file_base_name . '.' . $file_extension) === true) {
+            $file_index_arr = explode('_', $file_base_name);
+
+            if (count($file_index_arr) > 1 && is_numeric(end($file_index_arr))) {
+                $file_base_name = substr($file_base_name, 0, strrpos($file_base_name, '_'));
+            }
+            $file_base_name .= '_'. ($fi++);
+        }
+        return \Yii::getAlias('@app/web/img/') . $file_base_name . '.' . $file_extension;
+    }
+
+    public function getHttpStatus($remote_file_url) {
+        $curl = curl_init($remote_file_url);
+        curl_setopt($curl, CURLOPT_NOBODY, true);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        $result = curl_exec($curl);
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
+        return $http_status;
     }
 }
