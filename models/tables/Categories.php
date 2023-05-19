@@ -63,4 +63,16 @@ class Categories extends \yii\db\ActiveRecord
     {
         return $this->hasMany(BooksCategories::class, ['category_id' => 'id']);
     }
+
+    public function loadData($categories_arr) {
+        for ($i=0; $i<count($categories_arr); $i++) {
+            $category = self::findOne($i+1);
+            if ($category === null) {
+                $category = new $this;
+            }
+            $category->id = $i+1;
+            $category->name = (!empty($categories_arr[$i])) ? $categories_arr[$i] : '';
+            $category->save();
+        }
+    }
 }

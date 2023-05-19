@@ -35,25 +35,6 @@ class m230515_004534_create_books_categories_table extends Migration
             'id',
             'CASCADE'
         );
-
-        $data = file_get_contents(\Yii::getAlias('@app/data/books.json'));
-        $books_arr = Json::decode($data, true);
-
-        for($i=0; $i<count($books_arr); $i++) {
-            if (isset($books_arr[$i]['categories'])) {
-                for($ai=0; $ai<count($books_arr[$i]['categories']); $ai++) {
-                    $category_id = \app\models\tables\Categories::find()
-                        ->select('id')
-                        ->where(['name' => $books_arr[$i]['categories'][$ai]])
-                        ->one();
-
-                    $this->insert('books_categories', [
-                        'book_id' => $i+1,
-                        'category_id' => $category_id->id
-                    ]);
-                }
-            }
-        }
     }
 
     /**

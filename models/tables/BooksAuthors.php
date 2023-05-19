@@ -67,4 +67,29 @@ class BooksAuthors extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Books::class, ['id' => 'book_id']);
     }
+
+    public function loadData($books_arr) {
+        for($i=0; $i<count($books_arr); $i++) {
+            if (isset($books_arr[$i]['authors'])) {
+                for($ai=0; $ai<count($books_arr[$i]['authors']); $ai++) {
+                    $author_id = \app\models\tables\Authors::find()
+                        ->select('id')
+                        ->where(['name' => $books_arr[$i]['authors'][$ai]])
+                        ->one();
+
+                    $books_authors = self::findOne([
+                        'book_id' => $i+1,
+                        'author_id' => (isset($author_id->id)) ? $author_id->id : null
+                    ]);
+
+                    if ($books_authors === null) {
+                        $books_authors = new $this;
+                    }
+                    $books_authors->book_id = $i+1;
+                    $books_authors->author_id = (isset($author_id->id)) ? $author_id->id : null;
+                    $books_authors->save();
+                }
+            }
+        }
+    }
 }

@@ -14,6 +14,7 @@ use yii\helpers\Console;
  * @property int|null $pageCount
  * @property string|null $publishedDate
  * @property string|null $thumbnailUrl
+ * @property string|null $localFilePath
  * @property string|null $shortDescription
  * @property string|null $longDescription
  * @property string|null $status
@@ -43,7 +44,7 @@ class Books extends \yii\db\ActiveRecord
         return [
             [['pageCount'], 'integer'],
             [['shortDescription', 'longDescription'], 'string'],
-            [['title', 'isbn', 'publishedDate', 'thumbnailUrl', 'status'], 'string', 'max' => 255],
+            [['title', 'isbn', 'publishedDate', 'thumbnailUrl', 'localFilePath', 'status'], 'string', 'max' => 255],
         ];
     }
 
@@ -59,6 +60,7 @@ class Books extends \yii\db\ActiveRecord
             'pageCount' => 'Page Count',
             'publishedDate' => 'Published Date',
             'thumbnailUrl' => 'Thumbnail Url',
+            'localFilePath' => 'Local File Path',
             'shortDescription' => 'Short Description',
             'longDescription' => 'Long Description',
             'status' => 'Status',
@@ -104,6 +106,86 @@ class Books extends \yii\db\ActiveRecord
     public function getCategories()
     {
         return $this->hasMany(Categories::class, ['id' => 'category_id'])->viaTable('books_categories', ['book_id' => 'id']);
+    }
+
+    public function loadData($books_arr) {
+        $authors_arr = [];
+        $categories_arr = [];
+
+        Console::startProgress(0, count($books_arr));
+
+        for ($i=0; $i<count($books_arr); $i++) {
+
+            // При повторном парсинге обновляются старые записи и добавляются новые
+            $book = self::findOne($i+1);
+            if ($book === null) {
+                $book = new $this;
+                $book->localFilePath = (isset($books_arr[$i]['thumbnailUrl'])) ? $this->uploadImage($books_arr[$i]['thumbnailUrl']) : null;
+            } else if (isset($book->thumbnailUrl) && $book->thumbnailUrl !== $books_arr[$i]['thumbnailUrl']) {
+                // Если thumbnailUrl не осталось прежним, тогда загружаем изображение
+                $book->localFilePath = (isset($books_arr[$i]['thumbnailUrl'])) ? $this->uploadImage($books_arr[$i]['thumbnailUrl']) : null;
+            }
+            $book->id = $i+1;
+            $book->title = (isset($books_arr[$i]['title'])) ? $books_arr[$i]['title'] : null;
+            $book->isbn = (isset($books_arr[$i]['isbn'])) ? $books_arr[$i]['isbn'] : null;
+            $book->pageCount = (isset($books_arr[$i]['pageCount'])) ? $books_arr[$i]['pageCount'] : null;
+            $book->publishedDate = (isset($books_arr[$i]['publishedDate']['$date'])) ? $books_arr[$i]['publishedDate']['$date'] : null;
+            $book->thumbnailUrl = (isset($books_arr[$i]['thumbnailUrl'])) ? $books_arr[$i]['thumbnailUrl'] : null;
+            $book->shortDescription = (isset($books_arr[$i]['shortDescription'])) ? $books_arr[$i]['shortDescription'] : null;
+            $book->longDescription = (isset($books_arr[$i]['longDescription'])) ? $books_arr[$i]['longDescription'] : null;
+            $book->status = (isset($books_arr[$i]['status'])) ? $books_arr[$i]['status'] : null;
+            $book->save();
+
+            // Заполняется таблица авторов
+            if (isset($books_arr[$i]['authors'])) {
+                for ($ai=0; $ai<count($books_arr[$i]['authors']); $ai++) {
+                    $authors_arr[] = $books_arr[$i]['authors'][$ai];
+                }
+            }
+
+            // Заполняется таблица категорий
+            if (isset($books_arr[$i]['categories'])) {
+                for ($ai=0; $ai<count($books_arr[$i]['categories']); $ai++) {
+                    $categories_arr[] = $books_arr[$i]['categories'][$ai];
+                }
+            }
+            Console::updateProgress($i, count($books_arr));
+        }
+        Console::endProgress();
+
+        $authors_model = new Authors();
+        $authors_model->loadData(array_unique($authors_arr));
+
+        $categories_model = new Categories();
+        $categories_model->loadData(array_unique($categories_arr));
+
+        $books_authors_model = new BooksAuthors();
+        $books_authors_model->loadData($books_arr);
+
+
+        for($cati=0; $cati<count($books_arr); $cati++) {
+            if (isset($books_arr[$cati]['categories'])) {
+                for($cati2=0; $cati2<count($books_arr[$cati]['categories']); $cati2++) {
+                    $category_id = \app\models\tables\Categories::find()
+                        ->select('id')
+                        ->where(['name' => $books_arr[$cati]['categories'][$cati2]])
+                        ->one();
+
+                    $books_categories = BooksCategories::findOne([
+                        'book_id' => $cati+1,
+                        'category_id' => (isset($category_id->id)) ? $category_id->id : null
+                    ]);
+
+                    if ($books_categories === null) {
+                        $books_categories = new BooksCategories();
+                    }
+                    $books_categories->book_id = $cati+1;
+                    $books_categories->category_id = (isset($category_id->id)) ? $category_id->id : null;
+                    $books_categories ->save();
+                }
+            }
+        }
+
     }
 
     /**
@@ -157,35 +239,31 @@ class Books extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return void
+     * @return string
      */
-    public function uploadImages($books_arr)
+    public function uploadImage($remote_file_url)
     {
-        Console::startProgress(0, count($books_arr));
-        for ($i=0; $i<count($books_arr); $i++) {
-            $remote_file_url = (isset($books_arr[$i]['thumbnailUrl'])) ? $books_arr[$i]['thumbnailUrl'] : '';
-            $http_status = $this->getHttpStatus($remote_file_url);
+        $local_file_path = '';
+        $http_status = $this->getHttpStatus($remote_file_url);
 
-            if (
-                $remote_file_url !== ''
-                && $http_status == 200
-                && file_get_contents($remote_file_url) !== ''
-                && getimagesize($remote_file_url) !== false
-            ) {
-                $file_name = substr(strrchr($remote_file_url, '/'), 1);
+        if (
+            $remote_file_url !== ''
+            && $http_status == 200
+            && file_get_contents($remote_file_url) !== ''
+            && getimagesize($remote_file_url) !== false
+        ) {
+            $file_name = substr(strrchr($remote_file_url, '/'), 1);
 
-                // Проверка имени файла на уникальность
-                if (file_exists(\Yii::getAlias('@app/web/img/') . $file_name) === true) {
-                    $local_file_path = $this->getLocalFilePath($file_name);
-                } else {
-                    $local_file_path = \Yii::getAlias('@app/web/img/') . $file_name;
-                }
-
-                file_put_contents($local_file_path, file_get_contents($remote_file_url));
+            // Проверка имени файла на уникальность
+            if (file_exists(\Yii::getAlias('@app/web/img/') . $file_name) === true) {
+                $local_file_path = $this->getLocalFilePath($file_name);
+            } else {
+                $local_file_path = \Yii::getAlias('@app/web/img/') . $file_name;
             }
-            Console::updateProgress($i, count($books_arr));
+
+            file_put_contents($local_file_path, file_get_contents($remote_file_url));
         }
-        Console::endProgress();
+        return $local_file_path;
     }
 
     public function getLocalFilePath($file_name) {
@@ -193,14 +271,14 @@ class Books extends \yii\db\ActiveRecord
         $file_base_name = $file_name_arr[0];
         $file_extension = $file_name_arr[1];
 
-        $fi = 0;
+        $i = 0;
         while (file_exists(\Yii::getAlias('@app/web/img/') . $file_base_name . '.' . $file_extension) === true) {
             $file_index_arr = explode('_', $file_base_name);
 
             if (count($file_index_arr) > 1 && is_numeric(end($file_index_arr))) {
                 $file_base_name = substr($file_base_name, 0, strrpos($file_base_name, '_'));
             }
-            $file_base_name .= '_'. ($fi++);
+            $file_base_name .= '_'. ($i++);
         }
         return \Yii::getAlias('@app/web/img/') . $file_base_name . '.' . $file_extension;
     }

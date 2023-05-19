@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\filters\BooksFilter;
+use app\models\tables\Books;
 use app\models\tables\Categories;
 use Yii;
 use yii\filters\AccessControl;

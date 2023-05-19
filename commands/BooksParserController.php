@@ -16,9 +16,6 @@ class BooksParserController extends Controller
         $books_arr = Json::decode($data, true);
         $books_model = new Books();
 
-        // Изображения загружаются на сервер
-        $books_model->uploadImages($books_arr);
-
-        print_r($books_arr);
+        $books_model->loadData($books_arr);
     }
 }
