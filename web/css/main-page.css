@@ -1,6 +1,11 @@
 .books-categories {
     float: left;
     margin-right: 30px;
+    padding-left: 0;
+}
+
+.categories-dropdown {
+    display: none;
 }
 
 .books-categories li {
@@ -70,17 +75,38 @@ ul.pagination li:not(.prev, .next) {
     margin: 0 5px;
 }
 
+@media (max-width: 600px) {
+    .books-categories {
+        display: none;
+    }
+
+    .categories-dropdown {
+        display: block;
+        text-align: center;
+    }
+
+    .categories-dropdown li {
+        padding: 0 5px 0 10px;
+    }
+
+    .list-items {
+        justify-content: center;
+    }
+}
+
 @media (max-width: 350px) {
     .book-preview {
         width: 150px;
         height: unset;
     }
+
     .book-cover {
         width: 100%;
         height: unset;
         padding: 0 0 10px 0;
         text-align: center;
     }
+
     .book-info {
         width: 100%;
     }
