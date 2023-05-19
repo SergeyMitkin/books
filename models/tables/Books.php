@@ -162,30 +162,8 @@ class Books extends \yii\db\ActiveRecord
         $books_authors_model = new BooksAuthors();
         $books_authors_model->loadData($books_arr);
 
-
-        for($cati=0; $cati<count($books_arr); $cati++) {
-            if (isset($books_arr[$cati]['categories'])) {
-                for($cati2=0; $cati2<count($books_arr[$cati]['categories']); $cati2++) {
-                    $category_id = \app\models\tables\Categories::find()
-                        ->select('id')
-                        ->where(['name' => $books_arr[$cati]['categories'][$cati2]])
-                        ->one();
-
-                    $books_categories = BooksCategories::findOne([
-                        'book_id' => $cati+1,
-                        'category_id' => (isset($category_id->id)) ? $category_id->id : null
-                    ]);
-
-                    if ($books_categories === null) {
-                        $books_categories = new BooksCategories();
-                    }
-                    $books_categories->book_id = $cati+1;
-                    $books_categories->category_id = (isset($category_id->id)) ? $category_id->id : null;
-                    $books_categories ->save();
-                }
-            }
-        }
-
+        $books_categories_model = new BooksCategories();
+        $books_categories_model->loadData($books_arr);
     }
 
     /**

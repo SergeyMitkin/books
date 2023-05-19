@@ -67,4 +67,29 @@ class BooksCategories extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Categories::class, ['id' => 'category_id']);
     }
+
+    public function loadData($books_arr) {
+        for($i=0; $i<count($books_arr); $i++) {
+            if (isset($books_arr[$i]['categories'])) {
+                for($ci=0; $ci<count($books_arr[$i]['categories']); $ci++) {
+                    $category_id = \app\models\tables\Categories::find()
+                        ->select('id')
+                        ->where(['name' => $books_arr[$i]['categories'][$ci]])
+                        ->one();
+
+                    $books_categories = self::findOne([
+                        'book_id' => $i+1,
+                        'category_id' => (isset($category_id->id)) ? $category_id->id : null
+                    ]);
+
+                    if ($books_categories === null) {
+                        $books_categories = new $this;
+                    }
+                    $books_categories->book_id = $i+1;
+                    $books_categories->category_id = (isset($category_id->id)) ? $category_id->id : null;
+                    $books_categories ->save();
+                }
+            }
+        }
+    }
 }
