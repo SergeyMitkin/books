@@ -14,7 +14,7 @@ use yii\helpers\Console;
  * @property int|null $pageCount
  * @property string|null $publishedDate
  * @property string|null $thumbnailUrl
- * @property string|null $localFilePath
+ * @property string|null $imageName
  * @property string|null $shortDescription
  * @property string|null $longDescription
  * @property string|null $status
@@ -26,8 +26,6 @@ use yii\helpers\Console;
  */
 class Books extends \yii\db\ActiveRecord
 {
-    public $croppedDescription;
-
     /**
      * {@inheritdoc}
      */
@@ -44,7 +42,7 @@ class Books extends \yii\db\ActiveRecord
         return [
             [['pageCount'], 'integer'],
             [['shortDescription', 'longDescription'], 'string'],
-            [['title', 'isbn', 'publishedDate', 'thumbnailUrl', 'localFilePath', 'status'], 'string', 'max' => 255],
+            [['title', 'isbn', 'publishedDate', 'thumbnailUrl', 'imageName', 'status'], 'string', 'max' => 255],
         ];
     }
 
@@ -60,7 +58,7 @@ class Books extends \yii\db\ActiveRecord
             'pageCount' => 'Page Count',
             'publishedDate' => 'Published Date',
             'thumbnailUrl' => 'Thumbnail Url',
-            'localFilePath' => 'Local File Path',
+            'imageName' => 'Image Name',
             'shortDescription' => 'Short Description',
             'longDescription' => 'Long Description',
             'status' => 'Status',
@@ -120,10 +118,10 @@ class Books extends \yii\db\ActiveRecord
             $book = self::findOne($i+1);
             if ($book === null) {
                 $book = new $this;
-                $book->localFilePath = (isset($books_arr[$i]['thumbnailUrl'])) ? $this->uploadImage($books_arr[$i]['thumbnailUrl']) : null;
+                $book->imageName = (isset($books_arr[$i]['thumbnailUrl'])) ? $this->uploadImage($books_arr[$i]['thumbnailUrl']) : null;
             } else if (isset($book->thumbnailUrl) && $book->thumbnailUrl !== $books_arr[$i]['thumbnailUrl']) {
                 // Если thumbnailUrl не осталось прежним, тогда загружаем изображение
-                $book->localFilePath = (isset($books_arr[$i]['thumbnailUrl'])) ? $this->uploadImage($books_arr[$i]['thumbnailUrl']) : null;
+                $book->imageName = (isset($books_arr[$i]['thumbnailUrl'])) ? $this->uploadImage($books_arr[$i]['thumbnailUrl']) : null;
             }
             $book->id = $i+1;
             $book->title = (isset($books_arr[$i]['title'])) ? $books_arr[$i]['title'] : null;
@@ -221,7 +219,7 @@ class Books extends \yii\db\ActiveRecord
      */
     public function uploadImage($remote_file_url)
     {
-        $local_file_path = '';
+        $file_name = '';
         $http_status = $this->getHttpStatus($remote_file_url);
 
         if (
@@ -241,7 +239,7 @@ class Books extends \yii\db\ActiveRecord
 
             file_put_contents($local_file_path, file_get_contents($remote_file_url));
         }
-        return $local_file_path;
+        return $file_name;
     }
 
     public function getLocalFilePath($file_name) {

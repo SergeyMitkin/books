@@ -19,7 +19,7 @@ class m230514_202112_create_books_table extends Migration
             'pageCount' => $this->integer(),
             'publishedDate' => $this->string(),
             'thumbnailUrl' => $this->string(),
-            'localFilePath' => $this->string(),
+            'imageName' => $this->string(),
             'shortDescription' => $this->text(),
             'longDescription' => $this->text(),
             'status' => $this->string(),

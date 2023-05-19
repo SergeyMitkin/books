@@ -10,7 +10,7 @@ use yii\helpers\Html;
 <div class="book-preview">
     <h5 class="book-title"><?=$model->title?></h5>
     <div class="book-cover">
-        <img src="<?=$model->thumbnailUrl?>" alt="cover">
+        <?=Html::img('/img/' . $model->imageName, ['alt' => 'cover'])?>
     </div>
     <div class="book-info">
         <p class="book-authors"><?=$model->authorsToString()?></p>
