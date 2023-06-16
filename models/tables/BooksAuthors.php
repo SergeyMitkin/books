@@ -5,7 +5,7 @@ namespace app\models\tables;
 use Yii;
 
 /**
- * This is the model class for table "books_authors".
+ * Составная таблица "books_authors" для книг и авторов.
  *
  * @property int $book_id
  * @property int $author_id
@@ -68,6 +68,11 @@ class BooksAuthors extends \yii\db\ActiveRecord
         return $this->hasOne(Books::class, ['id' => 'book_id']);
     }
 
+    /**
+     * Загрузка данных в таблицу
+     * @param $books_arr
+     * @return void
+     */
     public function loadData($books_arr) {
         for($i=0; $i<count($books_arr); $i++) {
             if (isset($books_arr[$i]['authors'])) {

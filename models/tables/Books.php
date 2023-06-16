@@ -215,6 +215,7 @@ class Books extends \yii\db\ActiveRecord
     }
 
     /**
+     * Загрузка изображений обложек
      * @return string
      */
     public function uploadImage($remote_file_url)

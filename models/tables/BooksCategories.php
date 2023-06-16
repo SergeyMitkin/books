@@ -5,7 +5,7 @@ namespace app\models\tables;
 use Yii;
 
 /**
- * This is the model class for table "books_categories".
+ * Составная таблица "books_categories" для книг и категорий.
  *
  * @property int $book_id
  * @property int $category_id
@@ -68,6 +68,11 @@ class BooksCategories extends \yii\db\ActiveRecord
         return $this->hasOne(Categories::class, ['id' => 'category_id']);
     }
 
+    /**
+     * Загрузка данных в таблицу
+     * @param $books_arr
+     * @return void
+     */
     public function loadData($books_arr) {
         for($i=0; $i<count($books_arr); $i++) {
             if (isset($books_arr[$i]['categories'])) {

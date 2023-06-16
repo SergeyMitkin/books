@@ -64,6 +64,11 @@ class Categories extends \yii\db\ActiveRecord
         return $this->hasMany(BooksCategories::class, ['category_id' => 'id']);
     }
 
+    /**
+     * Загрузка данных в таблицу
+     * @param $categories_arr
+     * @return void
+     */
     public function loadData($categories_arr) {
         for ($i=0; $i<count($categories_arr); $i++) {
             $category = self::findOne($i+1);

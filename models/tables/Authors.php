@@ -64,6 +64,11 @@ class Authors extends \yii\db\ActiveRecord
         return $this->hasMany(BooksAuthors::class, ['author_id' => 'id']);
     }
 
+    /**
+     * Загрузка данных в таблицу
+     * @param $authors_arr
+     * @return void
+     */
     public function loadData($authors_arr)
     {
         for ($i=0; $i<count($authors_arr); $i++) {

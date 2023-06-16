@@ -9,7 +9,7 @@ use yii\helpers\Json;
 class BooksParserController extends Controller
 {
     /**
-     * books parser
+     * Парсинг книг из файла
      */
     public function actionIndex() {
         $data = file_get_contents('https://gitlab.com/prog-positron/test-app-vacancy/-/raw/master/books.json');
