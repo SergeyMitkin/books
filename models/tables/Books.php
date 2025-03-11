@@ -109,10 +109,11 @@ class Books extends \yii\db\ActiveRecord
     public function loadData($books_arr) {
         $authors_arr = [];
         $categories_arr = [];
+        $books_count = count($books_arr);
 
-        Console::startProgress(0, count($books_arr));
+        Console::startProgress(0, $books_count);
 
-        for ($i=0; $i<count($books_arr); $i++) {
+        for ($i=0; $i<$books_count; $i++) {
 
             // При повторном парсинге обновляются старые записи и добавляются новые
             $book = self::findOne($i+1);
@@ -147,7 +148,7 @@ class Books extends \yii\db\ActiveRecord
                     $categories_arr[] = $books_arr[$i]['categories'][$ai];
                 }
             }
-            Console::updateProgress($i, count($books_arr));
+            Console::updateProgress($i+1, $books_count);
         }
         Console::endProgress();
 
