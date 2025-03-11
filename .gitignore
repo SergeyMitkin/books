@@ -15,6 +15,9 @@ Thumbs.db
 # composer vendor dir
 /vendor
 
+# docker dir
+/docker
+
 # composer itself is not needed
 composer.phar
 
@@ -34,4 +37,3 @@ tests/_support/_generated
 
 #vagrant folder
 /.vagrant
-/docker
