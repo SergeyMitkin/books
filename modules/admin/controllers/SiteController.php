@@ -4,7 +4,6 @@ namespace app\modules\admin\controllers;
 
 use app\models\AdminLoginForm;
 use app\models\tables\Users;
-use yii\helpers\Json;
 use yii\web\Controller;
 
 class SiteController extends Controller
@@ -16,19 +15,6 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
-    }
-
-    public function actionTest()
-    {
-        $data = file_get_contents('https://gitlab.com/prog-positron/test-app-vacancy/-/raw/master/books.json');
-        $books_arr = Json::decode($data, true);
-
-        // --- ОТЛАДКА НАЧАЛО
-        echo '<pre>';
-        var_dump($books_arr);
-        echo'</pre>';
-        die;
-        // --- Отладка конец
     }
 
     public function actionLogin()
